@@ -1,7 +1,7 @@
 #include "MyQueue.h"
 #include <iostream>
 
-void MySpace::MyQueue::enqueue(const std::string& thingToEnqueue)
+void MySpace::NaiveQueue::enqueue(const std::string& thingToEnqueue)
 {
 	if (indexOfLastElement > MAX_QUEUE_CAPACITY - 1)
 	{
@@ -12,7 +12,10 @@ void MySpace::MyQueue::enqueue(const std::string& thingToEnqueue)
 	theQueueData[indexOfLastElement] = thingToEnqueue; 
 }
 
-void MySpace::MyQueue::dequeue()
+/*In the worst case, N "customers" in line have to take a step "forward:"!
+* That is, this implementation of dequeue has complexity O(N)
+*/
+void MySpace::NaiveQueue::dequeue()
 {
 	if (indexOfLastElement == -1)
 	{
@@ -35,7 +38,8 @@ void MySpace::MyQueue::dequeue()
 	indexOfLastElement--; 
 }
 
-MySpace::MyQueue::MyQueue()
+
+MySpace::NaiveQueue::NaiveQueue()
 {
 	//theQueueData[0] = "Make";
 	//theQueueData[1] = "us";
@@ -46,5 +50,92 @@ MySpace::MyQueue::MyQueue()
 	for (int i = 0; i < MAX_QUEUE_CAPACITY; ++i)
 	{
 		theQueueData[i] = ""; //EXPLICITLY initializing all queue elements to empty string
+	}
+}
+
+void MySpace::NotAsNaiveQueue::enqueue(const std::string& thingToEnqueue)
+{
+	if (isFull()) throw std::exception("queue is full - cannot add more");
+
+	else if (isEmpty()) 
+	{
+		//set both first and last to 0 (the first index in an array)
+		first = 0; 
+		last = 0; 
+		//(equivalently: first++; last++)
+	}
+
+	else
+	{
+		//last++;  //this is ONE way to do it
+
+		last = (last + 1) % MAX_QUEUE_CAPACITY; //ANOTHER way (getting "circular")
+		//ex: if last == -1 (initially empty), this becomes last = (-1 + 1) % 5 = 0
+		//and if last == 0 (before calling this function), this becomes (0 + 1) % 5 = 1
+		//...
+		//and if last == 4, this becomes (4 + 1) % 5 = 0
+
+		//Now this last example MIGHT seem like it overwrites the FIRST value in the queue
+		//BUT look into the definition of `isFull` for that:
+		//(returns true if (last + 1) % MAX_QUEUE_CAPACITY == first; -> (4 + 1) % 5 = 0 == 0
+
+	}
+
+	//now put the thing in: 
+	theQueueData[last] = thingToEnqueue;
+}
+
+void MySpace::NotAsNaiveQueue::dequeue()
+{
+	if (isEmpty()) throw std::exception("Queue is empty");
+
+	//std::cout << "Dequeueing " << theQueueData[first] << "\n";
+
+	if (first == last) //this means queue will be emptied as a result of this dequeue! "Flip reset"
+	{
+		first = -1;
+		last = -1;
+	}
+
+	//first++; //not the best approach...
+	else
+	{
+		first = (first + 1) % MAX_QUEUE_CAPACITY;
+	}
+}
+
+bool MySpace::NotAsNaiveQueue::isEmpty()
+{
+	if (first == -1)  
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+bool MySpace::NotAsNaiveQueue::isFull()
+{
+	//return (last == MAX_QUEUE_CAPACITY - 1); //one, "non-circular" way to do it: 
+	
+	int remainder = (last + 1) % MAX_QUEUE_CAPACITY; //making this a variable for ease of viewing in debugger...
+
+	return remainder == first; 
+}
+
+std::string MySpace::NotAsNaiveQueue::front()
+{
+	return theQueueData[first];
+}
+
+
+MySpace::NotAsNaiveQueue::NotAsNaiveQueue()
+{
+	for (int i = 0; i < MAX_QUEUE_CAPACITY; ++i)
+	{
+		theQueueData[i] = ""; //again, explicitly initializing to empty strings for "clarity"
 	}
 }

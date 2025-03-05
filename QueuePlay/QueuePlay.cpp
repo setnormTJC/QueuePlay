@@ -5,9 +5,21 @@
 
 #include <iostream>
 
-int main()
+/*Using a copy so that original is not modified*/
+void printQueue(MySpace::NotAsNaiveQueue notAsNaiveQueue)
 {
-	MySpace::MyQueue mq;
+	std::cout << "Queue contents (left is front, right is back)\n";
+	while (!notAsNaiveQueue.isEmpty())
+	{
+		std::cout << notAsNaiveQueue.front() << " "; 
+		notAsNaiveQueue.dequeue(); 
+	}
+
+}
+
+void demoNaiveQueue()
+{
+	MySpace::NaiveQueue mq;
 
 	try
 	{
@@ -15,15 +27,52 @@ int main()
 		mq.enqueue("Bob Loblaw");
 		mq.enqueue("Carol");
 		mq.enqueue("Darth");
-		mq.enqueue("Eve"); //throws "vector too long", at the moment - due to bug in dequeue
+		mq.enqueue("Eve");
+
+		
+
+		mq.dequeue();
+		mq.dequeue();
+		mq.dequeue();
+		mq.dequeue();
+		mq.dequeue();
+		mq.dequeue(); //throws
+	}
+
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << "\n";
+	}
+}
 
 
-		mq.dequeue();
-		mq.dequeue();
-		mq.dequeue();
-		mq.dequeue();
-		mq.dequeue();
-		mq.dequeue();//throws
+
+int main()
+{
+	MySpace::NotAsNaiveQueue notAsNaiveQueue;
+
+	try
+	{
+		notAsNaiveQueue.enqueue("Alice");
+		notAsNaiveQueue.enqueue("Bob Loblaw");
+		notAsNaiveQueue.enqueue("Carol");
+		notAsNaiveQueue.enqueue("Darth");
+		notAsNaiveQueue.enqueue("Eve"); 
+
+		std::cout << "After pushing A,B,C,D,E:\n";
+		printQueue(notAsNaiveQueue);
+
+		notAsNaiveQueue.dequeue(); //removes Alice
+		notAsNaiveQueue.dequeue(); //ditto Bob
+		notAsNaiveQueue.dequeue(); //"" Carol
+		notAsNaiveQueue.dequeue(); //"" Darth
+		
+		notAsNaiveQueue.enqueue("Frank");
+		
+		notAsNaiveQueue.dequeue(); //removes Eve
+		notAsNaiveQueue.dequeue(); //"" Frank
+
+		notAsNaiveQueue.dequeue(); //throws exception
 	}
 
 	catch (const std::exception& e)

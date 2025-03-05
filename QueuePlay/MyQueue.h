@@ -8,29 +8,56 @@ namespace MySpace
 	{
 	protected:
 		virtual void enqueue(const std::string& thingToEnqueue) = 0;
-		/*THAT'S what I like about Texas!*/
 		virtual void dequeue() = 0;
+
 	};
 
 	/*implemented using a C-style array (as opposed to a linked list (node) - based implementation*/
-	class MyQueue : public QueueADT
+	class NaiveQueue : public QueueADT
 	{
 	private:
 		static const int MAX_QUEUE_CAPACITY = 5;
 
 		std::string theQueueData[MAX_QUEUE_CAPACITY];
 
-		//int indexOfFIRSTElement; //... not always 0! -> play around with "circular arrays" (involving the mod operator) if desired 
 		int indexOfLastElement = -1; //empty initially, with default constructor
 
 	public:
 		/*pushes element in at the end of the queue*/
 		void enqueue(const std::string& thingToEnqueue);
-		/*Removes element at the front of the queue*/
-		virtual void dequeue();
 
-		MyQueue();
+		/*This implementation has complexity O(N) -> [a bad thing - we can do better]*/
+		void dequeue();
 
+
+		NaiveQueue();
+	};
+
+	/*Uses a "circular" array - which requires additional SPACE complexity but has better TIME complexity for dequeuing
+	* Note the tradeoff between time and space 
+	*/
+	class NotAsNaiveQueue : public QueueADT
+	{
+	private:
+		static const int MAX_QUEUE_CAPACITY = 5;
+
+		std::string theQueueData[MAX_QUEUE_CAPACITY];
+
+		/*the index of the first element (AKA: "customer to be serviced") in the queue*/
+		int first = -1; // initialize to -1 because default constructor will make empty strings in `theQueueData` array 
+		int last = -1;
+
+	public: 
+		void enqueue(const std::string& thingToEnqueue);
+		/*Aiming at average time complexity O(1) here...*/
+		void dequeue();
+
+		bool isEmpty(); 
+		bool isFull();
+
+		std::string front(); 
+
+		NotAsNaiveQueue(); 
 	};
 }
 

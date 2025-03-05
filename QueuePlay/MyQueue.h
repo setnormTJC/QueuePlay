@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 
 namespace MySpace
@@ -58,6 +59,34 @@ namespace MySpace
 		std::string front(); 
 
 		NotAsNaiveQueue(); 
+	};
+
+	/*SHOULD a queue's max capacity be able to grow and shrink? 
+	* Suppose your queue was previously serviced by a slow processor (cashier) - and now a faster one is used? 
+	* Or the amount of available memory (RAM) on your machine increases
+	*/
+	class ResizeableQueue : public QueueADT
+	{
+	private: 
+		std::vector<std::string> theQueueData; 
+		int capacity = 5; //non-const!
+	public: 
+		ResizeableQueue(); 
+
+		void enqueue(const std::string& thingToEnqueue);
+		/*Aiming at average time complexity O(1) here...*/
+		void dequeue();
+
+		bool isEmpty() const; 
+
+		/******************************************OPTIONAL member functions*******************/
+		/*a resizeable queue might be a "natural" candidate for an inplace merge*/
+		void inPlaceMerge(const ResizeableQueue& otherQueue); 
+		
+		/*return by reference?*/
+		ResizeableQueue outOfPlaceMerge(const ResizeableQueue& otherQueue);
+
+		void appendOtherQueue(const ResizeableQueue& otherQueue);
 	};
 }
 

@@ -27,13 +27,16 @@ void MySpace::NaiveQueue::dequeue()
 	//O(N) complexity! (bad)
 	//move previous second element to the first position, third to second, etc.: 
 	for (int i = 1; i <= indexOfLastElement; ++i) 
-	//+ 1 to overwrite the former last element with empty string (goes out of bounds if queue is FULL!)
 	{
+		std::cout << theQueueData[i] << " \"steps forward\"\n"; //optional print for visualization of queue mvmt
 		theQueueData[i - 1] = theQueueData[i]; 
 	}
 
-	//set the last element to the empty string: 
-	theQueueData[indexOfLastElement] = "";
+	//(OPTIONAL) set the unoccupied positions to the empty string: 
+	for (int i = indexOfLastElement; i < MAX_QUEUE_CAPACITY; ++i)
+	{
+		theQueueData[i] = "";
+	}
 
 	indexOfLastElement--; 
 }
@@ -138,4 +141,51 @@ MySpace::NotAsNaiveQueue::NotAsNaiveQueue()
 	{
 		theQueueData[i] = ""; //again, explicitly initializing to empty strings for "clarity"
 	}
+}
+
+MySpace::ResizeableQueue::ResizeableQueue()
+{
+}
+
+void MySpace::ResizeableQueue::enqueue(const std::string& thingToEnqueue)
+{
+}
+
+void MySpace::ResizeableQueue::dequeue()
+{
+}
+
+bool MySpace::ResizeableQueue::isEmpty() const
+{
+	return theQueueData.size() == 0; 
+}
+
+void MySpace::ResizeableQueue::inPlaceMerge(const ResizeableQueue& otherQueue)
+{
+
+}
+
+MySpace::ResizeableQueue MySpace::ResizeableQueue::outOfPlaceMerge(const ResizeableQueue& otherQueue)
+{
+	ResizeableQueue theNewQueue; //this will be a THIRD queue (created from merging "this" queue and otherQueue)
+	
+	/*Now what is the COMPLEXITY of this loop? ... O (m + n)? 
+	* ...Where 'm' and 'n' are the sizes of "this" queue and other queue, respectively.
+	*/
+	while (this->isEmpty() == false || otherQueue.isEmpty() == false)
+	{
+		//get first from "this" queue and push into theNewQueue: 
+		std::string frontElementInThisQueue = this->theQueueData.front(); //add safety check for nonempty queue
+		theNewQueue.theQueueData.push_back(frontElementInThisQueue); 
+
+		//same for the otherQueue:
+		std::string frontElementInOtherQueue = this->theQueueData.front();
+		theNewQueue.theQueueData.push_back(frontElementInOtherQueue);
+	}
+
+	return ResizeableQueue();
+}
+
+void MySpace::ResizeableQueue::appendOtherQueue(const ResizeableQueue& otherQueue)
+{
 }

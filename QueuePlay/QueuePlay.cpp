@@ -3,6 +3,7 @@
 
 #include"MyQueue.h"
 
+#include<array>
 #include <iostream>
 
 /*Using a copy so that original is not modified*/
@@ -46,18 +47,17 @@ void demoNaiveQueue()
 }
 
 
-
-int main()
+void demoNotAsNaiveQueue()
 {
 	MySpace::NotAsNaiveQueue notAsNaiveQueue;
-
+	
 	try
 	{
 		notAsNaiveQueue.enqueue("Alice");
 		notAsNaiveQueue.enqueue("Bob Loblaw");
 		notAsNaiveQueue.enqueue("Carol");
 		notAsNaiveQueue.enqueue("Darth");
-		notAsNaiveQueue.enqueue("Eve"); 
+		notAsNaiveQueue.enqueue("Eve");
 
 		std::cout << "After pushing A,B,C,D,E:\n";
 		printQueue(notAsNaiveQueue);
@@ -66,9 +66,9 @@ int main()
 		notAsNaiveQueue.dequeue(); //ditto Bob
 		notAsNaiveQueue.dequeue(); //"" Carol
 		notAsNaiveQueue.dequeue(); //"" Darth
-		
+
 		notAsNaiveQueue.enqueue("Frank");
-		
+
 		notAsNaiveQueue.dequeue(); //removes Eve
 		notAsNaiveQueue.dequeue(); //"" Frank
 
@@ -80,4 +80,11 @@ int main()
 		std::cout << e.what() << "\n";
 	}
 
+}
+
+int main()
+{
+	//std::array<std::string, 4> ar;
+
+	//demoNaiveQueue(); 
 }

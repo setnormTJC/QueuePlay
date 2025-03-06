@@ -14,7 +14,7 @@ namespace MySpace
 	};
 
 	/*implemented using a C-style array (as opposed to a linked list (node) - based implementation*/
-	class NaiveQueue : public QueueADT
+	class NaiveStaticQueue : public QueueADT
 	{
 	private:
 		static const int MAX_QUEUE_CAPACITY = 5;
@@ -31,13 +31,13 @@ namespace MySpace
 		void dequeue();
 
 
-		NaiveQueue();
+		NaiveStaticQueue();
 	};
 
 	/*Uses a "circular" array - which requires additional SPACE complexity but has better TIME complexity for dequeuing
 	* Note the tradeoff between time and space 
 	*/
-	class NotAsNaiveQueue : public QueueADT
+	class CircularStaticQueue : public QueueADT
 	{
 	private:
 		static const int MAX_QUEUE_CAPACITY = 5;
@@ -50,15 +50,29 @@ namespace MySpace
 
 	public: 
 		void enqueue(const std::string& thingToEnqueue);
+
+		/*N.B. "chaining" example: queueName.enqueue("Thing 1).enqueue("Thing 2")*/
+		CircularStaticQueue& enqueueWithChaining(const std::string& thingToEnqueue);
+
 		/*Aiming at average time complexity O(1) here...*/
 		void dequeue();
 
-		bool isEmpty(); 
+		bool isEmpty() const; 
 		bool isFull();
 
-		std::string front(); 
+		std::string front() const; 
 
-		NotAsNaiveQueue(); 
+		CircularStaticQueue(); 
+
+		/*******************Extra methods****************/
+
+
+		CircularStaticQueue& inPlaceMerge(CircularStaticQueue& other);
+
+		/*NOTE: this method will EMPTY "this" queue and "other" queue
+		* ALSO note: this method relies on `enqueue`'s safety check for a full queue 
+		*/
+		CircularStaticQueue outOfPlaceMerge(CircularStaticQueue& other);
 	};
 
 	/*SHOULD a queue's max capacity be able to grow and shrink? 

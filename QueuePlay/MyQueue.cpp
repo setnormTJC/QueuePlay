@@ -1,7 +1,9 @@
 #include "MyQueue.h"
 #include <iostream>
 
-void MySpace::NaiveQueue::enqueue(const std::string& thingToEnqueue)
+#pragma region NaiveStaticQueue
+
+void MySpace::NaiveStaticQueue::enqueue(const std::string& thingToEnqueue)
 {
 	if (indexOfLastElement > MAX_QUEUE_CAPACITY - 1)
 	{
@@ -15,7 +17,7 @@ void MySpace::NaiveQueue::enqueue(const std::string& thingToEnqueue)
 /*In the worst case, N "customers" in line have to take a step "forward:"!
 * That is, this implementation of dequeue has complexity O(N)
 */
-void MySpace::NaiveQueue::dequeue()
+void MySpace::NaiveStaticQueue::dequeue()
 {
 	if (indexOfLastElement == -1)
 	{
@@ -42,7 +44,7 @@ void MySpace::NaiveQueue::dequeue()
 }
 
 
-MySpace::NaiveQueue::NaiveQueue()
+MySpace::NaiveStaticQueue::NaiveStaticQueue()
 {
 	//theQueueData[0] = "Make";
 	//theQueueData[1] = "us";
@@ -56,7 +58,9 @@ MySpace::NaiveQueue::NaiveQueue()
 	}
 }
 
-void MySpace::NotAsNaiveQueue::enqueue(const std::string& thingToEnqueue)
+#pragma endregion
+
+void MySpace::CircularStaticQueue::enqueue(const std::string& thingToEnqueue)
 {
 	if (isFull()) throw std::exception("queue is full - cannot add more");
 
@@ -88,7 +92,29 @@ void MySpace::NotAsNaiveQueue::enqueue(const std::string& thingToEnqueue)
 	theQueueData[last] = thingToEnqueue;
 }
 
-void MySpace::NotAsNaiveQueue::dequeue()
+MySpace::CircularStaticQueue& MySpace::CircularStaticQueue::enqueueWithChaining(const std::string& thingToEnqueue)
+{
+	if (isFull()) throw std::exception("queue is full - cannot add more");
+
+	else if (isEmpty())
+	{
+		//set both first and last to 0 (the first index in an array)
+		first = 0;
+		last = 0;
+		//(equivalently: first++; last++)
+	}
+
+	else
+	{
+		last = (last + 1) % MAX_QUEUE_CAPACITY; //ANOTHER way (getting "circular")
+	}
+
+	theQueueData[last] = thingToEnqueue;
+	
+	return *this; 
+}
+
+void MySpace::CircularStaticQueue::dequeue()
 {
 	if (isEmpty()) throw std::exception("Queue is empty");
 
@@ -107,7 +133,7 @@ void MySpace::NotAsNaiveQueue::dequeue()
 	}
 }
 
-bool MySpace::NotAsNaiveQueue::isEmpty()
+bool MySpace::CircularStaticQueue::isEmpty() const
 {
 	if (first == -1)  
 	{
@@ -120,7 +146,7 @@ bool MySpace::NotAsNaiveQueue::isEmpty()
 	}
 }
 
-bool MySpace::NotAsNaiveQueue::isFull()
+bool MySpace::CircularStaticQueue::isFull()
 {
 	//return (last == MAX_QUEUE_CAPACITY - 1); //one, "non-circular" way to do it: 
 	
@@ -129,19 +155,68 @@ bool MySpace::NotAsNaiveQueue::isFull()
 	return remainder == first; 
 }
 
-std::string MySpace::NotAsNaiveQueue::front()
+std::string MySpace::CircularStaticQueue::front() const
 {
 	return theQueueData[first];
 }
 
 
-MySpace::NotAsNaiveQueue::NotAsNaiveQueue()
+MySpace::CircularStaticQueue::CircularStaticQueue()
 {
 	for (int i = 0; i < MAX_QUEUE_CAPACITY; ++i)
 	{
 		theQueueData[i] = ""; //again, explicitly initializing to empty strings for "clarity"
 	}
 }
+
+MySpace::CircularStaticQueue& MySpace::CircularStaticQueue::inPlaceMerge(CircularStaticQueue& other)
+{
+	while (other.isEmpty() == false)
+	{
+		if (!this->isEmpty())
+		{
+			this->enqueue(this->front());
+			this->dequeue();
+		}
+
+		if (!other.isEmpty())
+		{
+			this->enqueue(other.front());
+			other.dequeue();
+		}
+	}
+
+	return *this; 
+}
+
+MySpace::CircularStaticQueue MySpace::CircularStaticQueue::outOfPlaceMerge(CircularStaticQueue& other)
+{
+	CircularStaticQueue newQueue; 
+
+	bool isThisQueueEmpty = this->isEmpty(); 
+	bool isOtherQueueEmpty = other.isEmpty(); 
+
+	while (isThisQueueEmpty == false || isOtherQueueEmpty == false)
+	{
+		if (isThisQueueEmpty == false)
+		{
+			newQueue.enqueue(this->front()); 
+			this->dequeue(); 
+			isThisQueueEmpty = this->isEmpty(); 
+		}
+
+		if (isOtherQueueEmpty == false)
+		{
+			newQueue.enqueue(other.front());
+			other.dequeue(); 
+			isOtherQueueEmpty = other.isEmpty(); //check if other queue becomes empty after dequeueing
+		}
+	}
+
+	return newQueue;
+}
+
+#pragma region ResizableQueue
 
 MySpace::ResizeableQueue::ResizeableQueue()
 {
@@ -189,3 +264,5 @@ MySpace::ResizeableQueue MySpace::ResizeableQueue::outOfPlaceMerge(const Resizea
 void MySpace::ResizeableQueue::appendOtherQueue(const ResizeableQueue& otherQueue)
 {
 }
+
+#pragma endregion

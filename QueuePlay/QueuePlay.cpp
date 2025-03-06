@@ -7,7 +7,7 @@
 #include <iostream>
 
 /*Using a copy so that original is not modified*/
-void printQueue(MySpace::NotAsNaiveQueue notAsNaiveQueue)
+void printQueue(MySpace::CircularStaticQueue notAsNaiveQueue)
 {
 	std::cout << "Queue contents (left is front, right is back)\n";
 	while (!notAsNaiveQueue.isEmpty())
@@ -20,7 +20,7 @@ void printQueue(MySpace::NotAsNaiveQueue notAsNaiveQueue)
 
 void demoNaiveQueue()
 {
-	MySpace::NaiveQueue mq;
+	MySpace::NaiveStaticQueue mq;
 
 	try
 	{
@@ -49,7 +49,7 @@ void demoNaiveQueue()
 
 void demoNotAsNaiveQueue()
 {
-	MySpace::NotAsNaiveQueue notAsNaiveQueue;
+	MySpace::CircularStaticQueue notAsNaiveQueue;
 	
 	try
 	{
@@ -82,9 +82,48 @@ void demoNotAsNaiveQueue()
 
 }
 
+void demoOutOfPlaceMerge()
+{
+	MySpace::CircularStaticQueue q1;
+	q1.enqueue("Alice");
+	q1.enqueue("Carol");
+
+	MySpace::CircularStaticQueue q2;
+	q2.enqueue("Bob");
+	q2.enqueue("Darth");
+	q2.enqueue("Eve");
+
+	MySpace::CircularStaticQueue mergedQueue = q1.outOfPlaceMerge(q2);
+
+	std::cout << "Contents of merged queue: \n";
+	printQueue(mergedQueue);
+}
+
+/*"chaining" requires returning an object by reference and allows convenient syntax like:
+object.functionName().functionName().functionName()*/
+void demoChaining()
+{
+	MySpace::CircularStaticQueue q; 
+
+	q.enqueueWithChaining("A").enqueueWithChaining("B").enqueueWithChaining("C");
+
+	printQueue(q); 
+}
+
+void demoInPlaceMerge()
+{
+	MySpace::CircularStaticQueue q1;
+	q1.enqueueWithChaining("A").enqueueWithChaining("C").enqueueWithChaining("E");
+
+	MySpace::CircularStaticQueue q2;
+	q2.enqueueWithChaining("B").enqueueWithChaining("D");
+
+	q1.inPlaceMerge(q2).dequeue(); //note the chain!
+
+	printQueue(q1);
+}
+
 int main()
 {
-	//std::array<std::string, 4> ar;
 
-	//demoNaiveQueue(); 
 }
